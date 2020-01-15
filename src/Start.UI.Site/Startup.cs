@@ -28,6 +28,9 @@ namespace Start.UI.Site
                 app.UseDeveloperExceptionPage();
             }
 
+            // adicionar arquivos staticos
+            app.UseStaticFiles();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
