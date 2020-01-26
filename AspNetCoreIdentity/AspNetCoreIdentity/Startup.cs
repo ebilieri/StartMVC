@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AspNetCoreIdentity.Areas.Identity.Data;
+using AspNetCoreIdentity.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +46,16 @@ namespace AspNetCoreIdentity
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<AspNetCoreIdentityContext>();
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Excluir", policy => policy.RequireClaim("Excluir"));
+
+                options.AddPolicy("Ler", policy => policy.Requirements.Add(new PermissaoNecessaria("Ler")));
+                options.AddPolicy("Escrever", policy => policy.Requirements.Add(new PermissaoNecessaria("Escrever")));
+            });
+
+            //Registrar DI para classe
+            services.AddSingleton<IAuthorizationHandler, PermissaoNecessariaHandler>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
