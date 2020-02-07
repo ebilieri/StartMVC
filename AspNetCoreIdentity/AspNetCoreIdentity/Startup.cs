@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AspNetCoreIdentity.Areas.Identity.Data;
-using AspNetCoreIdentity.Extensions;
-using Microsoft.AspNetCore.Authorization;
+﻿using AspNetCoreIdentity.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,47 +9,39 @@ namespace AspNetCoreIdentity
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        public Startup(IHostingEnvironment hostingEnvironment)
+        {
+            var builder = new ConfigurationBuilder()
+                 .SetBasePath(hostingEnvironment.ContentRootPath)
+                 .AddJsonFile("appsettings.json", true, true)
+                 .AddJsonFile($"appsettings.{hostingEnvironment.EnvironmentName}.json")
+                 .AddEnvironmentVariables();
+
+            if (hostingEnvironment.IsProduction())
+            {
+                builder.AddUserSecrets<Startup>();
+            }
+
+            Configuration = builder.Build();
+        }
+
+        
+
+
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            services.AddIdentityConfig(Configuration);
 
+            services.AddAuthorizationConfig();
 
-            services.AddDbContext<AspNetCoreIdentityContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("AspNetCoreIdentityContextConnection")));
-
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddRoles<IdentityRole>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddEntityFrameworkStores<AspNetCoreIdentityContext>();
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Excluir", policy => policy.RequireClaim("Excluir"));
-
-                options.AddPolicy("Ler", policy => policy.Requirements.Add(new PermissaoNecessaria("Ler")));
-                options.AddPolicy("Escrever", policy => policy.Requirements.Add(new PermissaoNecessaria("Escrever")));
-            });
-
-            //Registrar DI para classe
-            services.AddSingleton<IAuthorizationHandler, PermissaoNecessariaHandler>();
+            services.ResolveDependencies();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -70,7 +51,7 @@ namespace AspNetCoreIdentity
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+
                 app.UseHsts();
             }
 
@@ -82,9 +63,7 @@ namespace AspNetCoreIdentity
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
