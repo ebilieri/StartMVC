@@ -50,7 +50,9 @@ namespace AspNetCoreIdentity
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                // tratamento customizado de erros
+                app.UseExceptionHandler("/erro/500");
+                app.UseStatusCodePagesWithRedirects("/erro/{0}");
 
                 app.UseHsts();
             }

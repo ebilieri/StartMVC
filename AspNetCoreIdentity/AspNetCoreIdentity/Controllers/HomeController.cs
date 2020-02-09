@@ -15,9 +15,10 @@ namespace AspNetCoreIdentity.Controllers
             return View();
         }
 
-        
+
         public IActionResult Privacy()
         {
+            throw new System.Exception("Erro");
             return View();
         }
 
@@ -39,16 +40,41 @@ namespace AspNetCoreIdentity.Controllers
             return View("Secret");
         }
 
-        [ClaimsAuthorize("Produtos", "Ler")]
+        [ClaimsAuthorize("Produtos", "Lere")]
         public IActionResult SecretClaimCustom()
         {
             return View("Secret");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [Route("erro/{id:length(3,3)}")]
+        public IActionResult Error(int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var modelErro = new ErrorViewModel();
+
+            if (id == 500)
+            {
+                modelErro.Mensagem = "Ocorreu um erro! Tente novamente mais tarde.";
+                modelErro.Titulo = "Ocorreu um erro!";
+                modelErro.ErroCode = id;
+            }
+            else if (id == 404)
+            {
+                modelErro.Mensagem = "A página que você esta procurando não existe!";
+                modelErro.Titulo = "Página não encontrada!";
+                modelErro.ErroCode = id;
+            }
+            else if (id == 403)
+            {
+                modelErro.Mensagem = "Você não tem permissão para acessar esse recurso.";
+                modelErro.Titulo = "Acesso negado!";
+                modelErro.ErroCode = id;
+            }
+            else
+            {
+                return StatusCode(404);
+            }
+
+            return View("Error", modelErro);
         }
     }
 }
