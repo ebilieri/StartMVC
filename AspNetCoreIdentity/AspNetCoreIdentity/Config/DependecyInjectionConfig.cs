@@ -1,10 +1,8 @@
 ﻿using AspNetCoreIdentity.Extensions;
+using KissLog;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AspNetCoreIdentity.Config
 {
@@ -14,6 +12,10 @@ namespace AspNetCoreIdentity.Config
         {
             //Registrar DI para classe
             services.AddSingleton<IAuthorizationHandler, PermissaoNecessariaHandler>();
+
+            // register dependencies KISLOGGER.NET
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped((context) => Logger.Factory.Get());
 
             return services;
         }
