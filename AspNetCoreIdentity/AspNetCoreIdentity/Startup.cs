@@ -1,4 +1,5 @@
 ﻿using AspNetCoreIdentity.Config;
+using AspNetCoreIdentity.Extensions;
 using KissLog.Apis.v1.Listeners;
 using KissLog.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -29,7 +30,7 @@ namespace AspNetCoreIdentity
             Configuration = builder.Build();
         }
 
-        
+
 
 
         public void ConfigureServices(IServiceCollection services)
@@ -40,7 +41,11 @@ namespace AspNetCoreIdentity
 
             services.ResolveDependencies();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(AuditoriaFilter));
+
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
 
@@ -66,7 +71,8 @@ namespace AspNetCoreIdentity
             app.UseAuthentication();
 
             // make sure it is added after app.UseStaticFiles() and app.UseSession(), and before app.UseMvc()
-            app.UseKissLogMiddleware(options => {
+            app.UseKissLogMiddleware(options =>
+            {
                 options.Listeners.Add(new KissLogApiListener(new KissLog.Apis.v1.Auth.Application(
                     Configuration["KissLog.OrganizationId"],
                     Configuration["KissLog.ApplicationId"])
