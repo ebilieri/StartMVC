@@ -19,7 +19,7 @@ namespace Dev.App.ViewModels
         [StringLength(2000, ErrorMessage = "O campo {0} precisar ter entre {2} e {1} caracteres", MinimumLength = 3)]
         public string Descricao { get; set; }
 
-        public IFormFile ImagemUpload { get; set; }
+        //public IFormFile ImagemUpload { get; set; }
 
         public string Imagem { get; set; }
 
