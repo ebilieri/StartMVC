@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Microsoft.Extensions.Localization;
 
-namespace DevIO.App.Extensions
+namespace Dev.App.Extensions
 {
     public class MoedaValidationAttributeAdapterProvider : IValidationAttributeAdapterProvider
     {

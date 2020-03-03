@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
-namespace DevIO.App.Extensions
+namespace Dev.App.Extensions
 {
     public class MoedaAttribute : ValidationAttribute
     {
