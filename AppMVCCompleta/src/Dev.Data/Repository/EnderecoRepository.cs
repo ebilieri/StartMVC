@@ -13,6 +13,11 @@ namespace Dev.Data.Repository
         {
         }
 
+        public Task AtualizarEndereco(Endereco endereco)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Endereco> ObterEnderecoPorForncedor(Guid fornecedorId)
         {
             return await Db.Enderecos.AsNoTracking()
