@@ -81,7 +81,7 @@ namespace Dev.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Forncedores");
+                    b.ToTable("Fornecedores");
                 });
 
             modelBuilder.Entity("Dev.Business.Models.Produto", b =>

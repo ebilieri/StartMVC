@@ -14,16 +14,16 @@ namespace Dev.Data.Mappings
 
             builder.Property(p => p.Documento).IsRequired().HasColumnType("varchar(20)");
 
-            // 1 : 1 => Forncedor : Endereco
+            // 1 : 1 => Fornecedor : Endereco
             builder.HasOne(f => f.Endereco)
                 .WithOne(e => e.Fornecedor);
 
-            // 1 : N => Forncedor : Produtos
+            // 1 : N => Fornecedor : Produtos
             builder.HasMany(f => f.Produtos)
                 .WithOne(p => p.Fornecedor)
                 .HasForeignKey(p => p.FornecedorId);
 
-            builder.ToTable("Forncedores");
+            builder.ToTable("Fornecedores");
         }
     }
 }

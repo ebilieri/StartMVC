@@ -18,7 +18,7 @@ namespace Dev.Data.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<Endereco> ObterEnderecoPorForncedor(Guid fornecedorId)
+        public async Task<Endereco> ObterEnderecoPorFornecedor(Guid fornecedorId)
         {
             return await Db.Enderecos.AsNoTracking()
                  .FirstOrDefaultAsync(f => f.FornecedorId == fornecedorId);

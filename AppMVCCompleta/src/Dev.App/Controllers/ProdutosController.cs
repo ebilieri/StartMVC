@@ -14,14 +14,18 @@ namespace Dev.App.Controllers
     public class ProdutosController : BaseController
     {
         private readonly IProdutoRepository _produtoRepository;
+        private readonly IProdutoService _produtoService;
         private readonly IFornecedorRepository _fornecedorRepository;
         private readonly IMapper _mapper;
 
         public ProdutosController(IProdutoRepository produtoRepository,
+                                  IProdutoService produtoService,
                                   IFornecedorRepository fornecedorRepository,
-                                  IMapper mapper)
+                                  IMapper mapper,
+                                  INotificador notificador) : base(notificador)
         {
             _produtoRepository = produtoRepository;
+            _produtoService = produtoService;
             _fornecedorRepository = fornecedorRepository;
             _mapper = mapper;
         }
@@ -49,7 +53,7 @@ namespace Dev.App.Controllers
         [Route("novo-produto")]
         public async Task<IActionResult> Create()
         {
-            var produtoViewModel = await PopularForncedores(new ProdutoViewModel());
+            var produtoViewModel = await PopularFornecedores(new ProdutoViewModel());
             return View(produtoViewModel);
         }
 
@@ -58,7 +62,7 @@ namespace Dev.App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProdutoViewModel produtoViewModel)
         {
-            produtoViewModel = await PopularForncedores(produtoViewModel);
+            produtoViewModel = await PopularFornecedores(produtoViewModel);
 
             if (!ModelState.IsValid) return View(produtoViewModel);
 
@@ -72,7 +76,9 @@ namespace Dev.App.Controllers
             // carregar nome do arquivo
             produtoViewModel.Imagem = imgPrefixo + produtoViewModel.ImagemUpload.FileName;
 
-            await _produtoRepository.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+            await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+
+            if (!OperacaoValida()) return View(produtoViewModel);
 
             return RedirectToAction(nameof(Index));
         }
@@ -122,7 +128,9 @@ namespace Dev.App.Controllers
             produtoAtualizacao.Valor = produtoViewModel.Valor;
             produtoAtualizacao.Ativo = produtoViewModel.Ativo;
 
-            await _produtoRepository.Atualizar(_mapper.Map<Produto>(produtoAtualizacao));
+            await _produtoService.Atualizar(_mapper.Map<Produto>(produtoAtualizacao));
+
+            if (!OperacaoValida()) return View(produtoViewModel);
 
             return RedirectToAction(nameof(Index));
         }
@@ -146,7 +154,11 @@ namespace Dev.App.Controllers
 
             if (produtoViewModel == null) return NotFound();
 
-            await _produtoRepository.Remover(id);
+            await _produtoService.Remover(id);
+
+            if (!OperacaoValida()) return View(produtoViewModel);
+
+            TempData["Sucesso"] = "Produto excluído com sucesso!";
 
             return RedirectToAction(nameof(Index));
         }
@@ -158,7 +170,7 @@ namespace Dev.App.Controllers
             return produto;
         }
 
-        private async Task<ProdutoViewModel> PopularForncedores(ProdutoViewModel produto)
+        private async Task<ProdutoViewModel> PopularFornecedores(ProdutoViewModel produto)
         {
             produto.Fornecedores = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
             return produto;

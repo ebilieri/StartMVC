@@ -8,7 +8,7 @@ namespace Dev.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Forncedores",
+                name: "Fornecedores",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
@@ -19,7 +19,7 @@ namespace Dev.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Forncedores", x => x.Id);
+                    table.PrimaryKey("PK_Fornecedores", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -40,9 +40,9 @@ namespace Dev.Data.Migrations
                 {
                     table.PrimaryKey("PK_Enderecos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Enderecos_Forncedores_FornecedorId",
+                        name: "FK_Enderecos_Fornecedores_FornecedorId",
                         column: x => x.FornecedorId,
-                        principalTable: "Forncedores",
+                        principalTable: "Fornecedores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -64,9 +64,9 @@ namespace Dev.Data.Migrations
                 {
                     table.PrimaryKey("PK_Produtos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Produtos_Forncedores_FornecedorId",
+                        name: "FK_Produtos_Fornecedores_FornecedorId",
                         column: x => x.FornecedorId,
-                        principalTable: "Forncedores",
+                        principalTable: "Fornecedores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -92,7 +92,7 @@ namespace Dev.Data.Migrations
                 name: "Produtos");
 
             migrationBuilder.DropTable(
-                name: "Forncedores");
+                name: "Fornecedores");
         }
     }
 }
